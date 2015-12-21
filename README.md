@@ -1,3 +1,5 @@
+This a mirror of the xprintf lib from ChaN
+
 ``` c
 /*------------------------------------------------------------------------/
 /  Universal string handler for user console interface
@@ -12,5 +14,5 @@
 /
 /-------------------------------------------------------------------------*/
 ```
+xsnprintf added
 
-with additional xsnprintf
