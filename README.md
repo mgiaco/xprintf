@@ -1,4 +1,4 @@
-This a mirror of the xprintf lib from ChaN
+This a mirror of the xprintf lib from ChaN http://elm-chan.org/fsw/strf/xprintf.html
 
 ``` c
 /*------------------------------------------------------------------------/
