@@ -1,3 +1,4 @@
+``` c
 /*------------------------------------------------------------------------/
 /  Universal string handler for user console interface
 /-------------------------------------------------------------------------/
@@ -10,5 +11,6 @@
 / * Redistributions of source code must retain the above copyright notice.
 /
 /-------------------------------------------------------------------------*/
+```
 
 with additional xsnprintf
