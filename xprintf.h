@@ -19,6 +19,7 @@ void xputc (char c);
 void xputs (const char* str);
 void xfputs (void (*func)(unsigned char), const char* str);
 void xprintf (const char* fmt, ...);
+unsigned int xsnprintf (char* buff, unsigned int buf_size, const char* fmt, ...);
 void xsprintf (char* buff, const char* fmt, ...);
 void xfprintf (void (*func)(unsigned char), const char*	fmt, ...);
 void put_dump (const void* buff, unsigned long addr, int len, int width);

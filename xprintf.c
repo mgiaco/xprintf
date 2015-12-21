@@ -18,6 +18,8 @@
 #include <stdarg.h>
 void (*xfunc_out)(unsigned char);	/* Pointer to the output stream */
 static char *outptr;
+static unsigned int buffer_size;
+static unsigned int printed_chars;
 
 /*----------------------------------------------*/
 /* Put a character                              */
@@ -25,6 +27,7 @@ static char *outptr;
 
 void xputc (char c)
 {
+	printed_chars++;
 	if (_CR_CRLF && c == '\n') xputc('\r');		/* CR -> CRLF */
 
 	if (outptr) {
@@ -94,8 +97,13 @@ void xvprintf (
 	unsigned long v;
 	char s[16], c, d, *p;
 
+	printed_chars = 0;
 
 	for (;;) {
+		if((printed_chars >= buffer_size) && (buffer_size != 0)) {
+			break;
+		}
+
 		c = *fmt++;					/* Get a char */
 		if (!c) break;				/* End of format? */
 		if (c != '%') {				/* Pass through it if not a % sequense */
@@ -169,12 +177,44 @@ void xprintf (			/* Put a formatted string to the default device */
 {
 	va_list arp;
 
+	buffer_size = 0;
 
 	va_start(arp, fmt);
 	xvprintf(fmt, arp);
 	va_end(arp);
 }
 
+
+unsigned int xsnprintf (	/* Put a formatted string to the memory */
+	char* buff,				/* Pointer to the output buffer */
+	unsigned int buf_size,	/* Buffer size */
+	const char*	fmt,		/* Pointer to the format string */
+	...						/* Optional arguments */
+)
+{
+	va_list arp;
+
+	buffer_size = buf_size;
+	outptr = buff;		/* Switch destination for memory */
+
+	va_start(arp, fmt);
+	xvprintf(fmt, arp);
+	va_end(arp);
+
+	if (printed_chars < buf_size)
+	{
+		buff[printed_chars] = '\0';
+	}
+	else if (buf_size > 0)
+	{
+		buff[buf_size - 1] = '\0';
+		printed_chars = buf_size;
+	}
+
+	outptr = 0;			/* Switch destination for device */
+
+	return printed_chars;
+}
 
 void xsprintf (			/* Put a formatted string to the memory */
 	char* buff,			/* Pointer to the output buffer */
@@ -184,6 +224,7 @@ void xsprintf (			/* Put a formatted string to the memory */
 {
 	va_list arp;
 
+	buffer_size = 0;
 
 	outptr = buff;		/* Switch destination for memory */
 
@@ -208,6 +249,8 @@ void xfprintf (					/* Put a formatted string to the specified device */
 
 	pf = xfunc_out;		/* Save current output device */
 	xfunc_out = func;	/* Switch output to specified device */
+
+	buffer_size = 0;
 
 	va_start(arp, fmt);
 	xvprintf(fmt, arp);
@@ -295,7 +338,7 @@ int xgets (		/* 0:End of stream, 1:A line arrived */
 			continue;
 		}
 		if (c >= ' ' && i < len - 1) {	/* Visible chars */
-			buff[i++] = c;
+			buff[i++] = (char)c;
 			if (_LINE_ECHO) xputc(c);
 		}
 	}
